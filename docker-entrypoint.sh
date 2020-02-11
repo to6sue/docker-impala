@@ -29,8 +29,9 @@ IMPALA_STATE_STORE_PORT=24000
 IMPALA_BACKEND_PORT=22000
 IMPALA_LOG_DIR=/var/log/impala
 
-IMPALA_CATALOG_ARGS=" -log_dir=${IMPALA_LOG_DIR} "
+IMPALA_CATALOG_ARGS=" -log_dir=${IMPALA_LOG_DIR} -state_store_host=${IMPALA_STATE_STORE_HOST}"
 IMPALA_STATE_STORE_ARGS=" -log_dir=${IMPALA_LOG_DIR} -state_store_port=${IMPALA_STATE_STORE_PORT}"
+
 
 chmod +x /wait-for-it.sh
 
@@ -44,7 +45,7 @@ if [[ "$1" == "hadoop-nm" ]]; then
   sudo -u hdfs hdfs dfs -chmod 777 /
  
 elif [[ "$1" == "hive-metastore" ]]; then
-  
+
    /wait-for-it.sh postgres:5432 -t 120
 
    psql -h postgres -U postgres -c "CREATE DATABASE metastore;" 2>/dev/null
@@ -54,22 +55,26 @@ elif [[ "$1" == "hive-metastore" ]]; then
    /etc/init.d/hive-metastore start
 
 elif [[ "$1" == "impala-state-store" ]]; then
-  /etc/init.d/impala-state-store start
-
+  #/etc/init.d/impala-state-store start
+   /bin/su -s /bin/bash -c "/bin/bash -c 'cd ~ && exec /usr/bin/statestored ${IMPALA_CATALOG_ARGS} >>${IMPALA_LOG_DIR}/impala-state-store.log 2>&1' &" impala
 elif [[ "$1" == "impala-catalog" ]]; then
+  
   /wait-for-it.sh hive-metastore:9083 -t 120
 
-  /etc/init.d/impala-catalog start
+  #/etc/init.d/impala-catalog start
+  /bin/su -s /bin/bash -c "/bin/bash -c 'cd ~ && exec /usr/bin/catalogd ${IMPALA_CATALOG_ARGS} >>${IMPALA_LOG_DIR}/impala-catalog.log 2>&1' &" impala
 
 elif [[ "$1" == "impala-server" ]]; then
 
-  # second argument not exists
-  if [[ -n "$KUDU_MASTERS" ]]; then
+  /wait-for-it.sh kudu-master-1:7051 -t 120
+  /wait-for-it.sh kudu-master-2:7051 -t 120
+  /wait-for-it.sh kudu-master-3:7051 -t 120
+
+   if [[ -n "$KUDU_MASTERS" ]]; then
     IMPALA_SERVER_ARGS=" \
       -log_dir=${IMPALA_LOG_DIR} \
       -catalog_service_host=${IMPALA_CATALOG_SERVICE_HOST} \
       -state_store_port=${IMPALA_STATE_STORE_PORT} \
-      -use_statestore \
       -state_store_host=${IMPALA_STATE_STORE_HOST} \
       -be_port=${IMPALA_BACKEND_PORT} \
       -kudu_master_hosts=$KUDU_MASTERS"
@@ -78,14 +83,16 @@ elif [[ "$1" == "impala-server" ]]; then
       -log_dir=${IMPALA_LOG_DIR} \
       -catalog_service_host=${IMPALA_CATALOG_SERVICE_HOST} \
       -state_store_port=${IMPALA_STATE_STORE_PORT} \
-      -use_statestore \
       -state_store_host=${IMPALA_STATE_STORE_HOST} \
       -be_port=${IMPALA_BACKEND_PORT}"
   fi
 
 
+
   /etc/init.d/hadoop-hdfs-datanode start
-  /etc/init.d/impala-server start
+  
+  #/etc/init.d/impala-server start
+   /bin/su -s /bin/bash -c "/bin/bash -c 'cd ~ && exec /usr/bin/impalad ${IMPALA_SERVER_ARGS} >>${IMPALA_LOG_DIR}/impala-server.log 2>&1' &" impala
 
 elif [[ "$1" == "standalone" ]]; then
 
