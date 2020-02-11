@@ -1,0 +1,151 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:9.4
+    networks:
+      - impala-nw
+    ports:
+    - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: postgres
+  hadoop-nm:
+    image: ksk124/impala2:latest
+    hostname: hadoop-nm
+    networks:
+      - impala-nw
+    ports:
+      # HDFS
+      - 9000
+      - 50070
+      - 50075
+      - 8020
+      - 8042
+    command: ["hadoop-nm"]
+  hive-metastore:
+    image: ksk124/impala2:latest
+    hostname: hive-metastore
+    networks:
+      - impala-nw
+    external_links:
+      - postgres
+    depends_on:
+      - postgres
+    environment:
+      PGPASSWORD: postgres
+    ports:
+      # Hive
+      - 9083:9083
+    command: ["hive-metastore"]
+  impala-state-store:
+    image: ksk124/impala2:latest
+    hostname: impala-state-store
+    networks:
+      - impala-nw
+    depends_on:
+      - hive-metastore
+    ports:
+      # Impala
+      - 21000
+      - 21050
+      - 25000
+      - 25010
+      - 25020
+    command: ["impala-state-store"]
+  impala-catalog:
+    image: ksk124/impala2:latest
+    hostname: impala-state-store
+    networks:
+      - impala-nw
+    depends_on:
+      - impala-state-store
+    ports:
+      # Impala
+      - 21000
+      - 21050
+      - 25000
+      - 25010
+      - 25020
+    command: ["impala-catalog"]
+   impala-server:
+    image: ksk124/impala2:latest
+    hostname: impala-server
+    networks:
+     - impala-nw
+    depends_on:
+     - impala-catalog
+     - kudu-master-1
+     - kudu-master-2
+     - kudu-master-3
+    ports:
+      # Impala
+      - 21000
+      - 21050
+      - 25000
+      - 25010
+      - 25020
+    command: ["impala-server"]
+    environment:
+      - KUDU_MASTERS=kudu-master-1,kudu-master-2,kudu-master-3
+    deploy:
+      replicas: 3
+  kudu-master-1:
+    image: ksk124/kudu2:latest
+    networks:
+      impala-nw:
+        aliases:
+        - kudu
+    hostname: kudu-master-1
+    ports:
+      - "7051"
+      - "8051:8051"
+    command: ["master"]
+    environment:
+      - KUDU_MASTERS=kudu-master-1,kudu-master-2,kudu-master-3
+  kudu-master-2:
+    image: ksk124/kudu2:latest
+    networks:
+      impala-nw:
+        aliases:
+        - kudu
+    hostname: kudu-master-2
+    ports:
+      - "7051"
+      - "8051"
+    command: ["master"]
+    environment:
+      - KUDU_MASTERS=kudu-master-1,kudu-master-2,kudu-master-3
+  kudu-master-3:
+    image: ksk124/kudu2:latest
+    networks:
+      impala-nw:
+        aliases:
+          - kudu
+    hostname: kudu-master-3
+    ports:
+      - "7051"
+      - "8051"
+    command: ["master"]
+    environment:
+      - KUDU_MASTERS=kudu-master-1,kudu-master-2,kudu-master-3
+  kudu-tserver:
+    image: ksk124/kudu2:latest
+    networks:
+      - impala-nw
+    depends_on:
+      - kudu-master-1
+      - kudu-master-2
+      - kudu-master-3
+    ports:
+      - "7050"
+      - "8050"
+    command: ["tserver"]
+    environment:
+      - KUDU_MASTERS=kudu-master-1,kudu-master-2,kudu-master-3
+    deploy:
+      replicas: 3
+networks:
+  default:
+    external:
+      name: impala-nw
+  impala-nw:
+    driver: bridge

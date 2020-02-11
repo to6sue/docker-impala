@@ -1,0 +1,75 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:9.4
+    networks:
+      - impala-nw
+    ports:
+    - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: postgres
+  hadoop-nm:
+    image: ksk124/impala2:latest
+    hostname: hadoop-nm
+    networks:
+      - impala-nw
+    ports:
+      # HDFS
+      - 9000
+      - 50070
+      - 50075
+      - 8020
+      - 8042
+    command: ["hadoop-nm"]
+  hive-metastore:
+    image: ksk124/impala2:latest
+    hostname: hive
+    networks:
+      - impala-nw
+    external_links:
+      - postgres
+    depends_on:
+      - postgres
+    environment:
+      PGPASSWORD: postgres
+    ports:
+      # Hive
+      - 9083:9083
+    command: ["hive-metastore"]
+  impala-state-store:
+    image: ksk124/impala2:latest
+    hostname: impala-state-store
+    networks:
+      - impala-nw
+    depends_on:
+      - hive-metastore
+    ports:
+      # Impala
+      - 21000
+      - 21050
+      - 25000
+      - 25010
+      - 25020
+    command: ["impala-state-store"]
+  impala-catalog:
+    image: ksk124/impala:latest
+    hostname: impala-state-store
+    networks:
+      - impala-nw
+    depends_on:
+      - impala-state-store
+      - hive-metastore
+    ports:
+      # Impala
+      - 21000
+      - 21050
+      - 25000
+      - 25010
+      - 25020
+    command: ["impala-catalog"]
+networks:
+  default:
+    external:
+      name: impala-nw
+  impala-nw:
+    driver: bridge
