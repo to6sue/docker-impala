@@ -66,9 +66,9 @@ elif [[ "$1" == "impala-catalog" ]]; then
 
 elif [[ "$1" == "impala-server" ]]; then
 
-#  /wait-for-it.sh kudu-master-1:7051 -t 120
-#  /wait-for-it.sh kudu-master-2:7051 -t 120
-#  /wait-for-it.sh kudu-master-3:7051 -t 120
+  /wait-for-it.sh kudu-master-1:7051 -t 120
+  /wait-for-it.sh kudu-master-2:7051 -t 120
+  /wait-for-it.sh kudu-master-3:7051 -t 120
 
    if [[ -n "$KUDU_MASTERS" ]]; then
     IMPALA_SERVER_ARGS=" \

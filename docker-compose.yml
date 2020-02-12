@@ -23,7 +23,7 @@ services:
     command: ["hadoop-nm"]
   hive-metastore:
     image: ksk124/impala:latest
-    hostname: hive
+    hostname: hive-metastore
     networks:
       - impala-nw
     external_links:
@@ -47,6 +47,9 @@ services:
       # Impala
       - 21000
       - 21050
+      - 22000
+      - 23000
+      - 24000
       - 25000
       - 25010
       - 25020
@@ -62,6 +65,7 @@ services:
     ports:
       # Impala
       - 21000
+      - 23020
       - 21050
       - 25000
       - 25010
@@ -81,6 +85,9 @@ services:
       # Impala
       - 21000
       - 21050
+      - 22000
+      - 23000
+      - 24000
       - 25000
       - 25010
       - 25020
