@@ -100,6 +100,7 @@ elif [[ "$1" == "standalone" ]]; then
   echo "=========== Standalone for Test ==============="
   
   echo "=========== HDFS start ==============="
+  service hadoop-hdfs-namenode init
   /etc/init.d/hadoop-hdfs-namenode start
   /etc/init.d/hadoop-hdfs-datanode start
 
