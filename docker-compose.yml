@@ -54,6 +54,8 @@ services:
       - 25010
       - 25020
     command: ["impala-state-store"]
+    environment:
+      - IMPALA_STATE_STORE_HOST=impala-state-store
   impala-catalog:
     image: ksk124/impala:latest
     hostname: impala-catalog
@@ -71,6 +73,8 @@ services:
       - 25010
       - 25020
     command: ["impala-catalog"]
+    environment:
+      - IMPALA_CATALOG_HOST=impala-catalog
   impala-server:
     image: ksk124/impala:latest
     hostname: impala-server
