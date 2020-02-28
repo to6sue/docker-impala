@@ -9,7 +9,7 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
   hadoop-nm:
-    image: ksk124/impala:latest
+    image: apache-impala:latest
     hostname: hadoop-nm
     networks:
       - impala-nw
@@ -22,7 +22,7 @@ services:
       - 8042
     command: ["hadoop-nm"]
   hive-metastore:
-    image: ksk124/impala:latest
+    image: apache-impala:latest
     hostname: hive-metastore
     networks:
       - impala-nw
@@ -37,7 +37,7 @@ services:
       - 9083:9083
     command: ["hive-metastore"]
   impala-state-store:
-    image: ksk124/impala:latest
+    image: apache-impala:latest
     hostname: impala-state-store
     networks:
       - impala-nw
@@ -57,7 +57,7 @@ services:
     environment:
       - IMPALA_STATE_STORE_HOST=impala-state-store
   impala-catalog:
-    image: ksk124/impala:latest
+    image: apache-impala:latest
     hostname: impala-catalog
     networks:
       - impala-nw
@@ -76,7 +76,7 @@ services:
     environment:
       - IMPALA_CATALOG_HOST=impala-catalog
   impala-server:
-    image: ksk124/impala:latest
+    image: apache-impala:latest
     hostname: impala-server
     networks:
       - impala-nw
@@ -101,7 +101,7 @@ services:
     deploy:
       replicas: 3
   kudu-master-1:
-    image: ksk124/kudu:latest
+    image: apache-kudu:latest
     networks:
       impala-nw:
         aliases:
@@ -114,7 +114,7 @@ services:
     environment:
       - KUDU_MASTERS=kudu-master-1,kudu-master-2,kudu-master-3
   kudu-master-2:
-    image: ksk124/kudu:latest
+    image: apache-kudu:latest
     networks:
       impala-nw:
         aliases:
@@ -127,7 +127,7 @@ services:
     environment:
       - KUDU_MASTERS=kudu-master-1,kudu-master-2,kudu-master-3
   kudu-master-3:
-    image: ksk124/kudu:latest
+    image: apache-kudu:latest
     networks:
       impala-nw:
         aliases:
@@ -140,7 +140,7 @@ services:
     environment:
       - KUDU_MASTERS=kudu-master-1,kudu-master-2,kudu-master-3
   kudu-tserver:
-    image: ksk124/kudu:latest
+    image: apache-kudu:latest
     networks:
       - impala-nw
     depends_on:
