@@ -10,13 +10,6 @@ MAINTAINER ksk124 <ksk124@poscoict.com>
 
 RUN mkdir -p /config \
   && yum install -y wget
-#  && wget -O /config/core-site.xml https://soo-test-bucket.s3.ap-northeast-2.amazonaws.com/kube-impala-docker/core-site.xml \
-#  && wget -O /config/hdfs-site.xml https://soo-test-bucket.s3.ap-northeast-2.amazonaws.com/kube-impala-docker/hdfs-site.xml \
-#  && wget -O /config/hive-site.xml https://soo-test-bucket.s3.ap-northeast-2.amazonaws.com/kube-impala-docker/hive-site.xml \
-#  && wget -O /config/impala-master https://soo-test-bucket.s3.ap-northeast-2.amazonaws.com/kube-impala-docker/impala-master \
-#  && wget -O /config/impala-tserver https://soo-test-bucket.s3.ap-northeast-2.amazonaws.com/kube-impala-docker/impala-tserver \
-#  && wget -O /etc/yum.repos.d/cloudera-cdh6.repo https://soo-test-bucket.s3.ap-northeast-2.amazonaws.com/kube-impala-docker/cloudera-cdh6.repo \
-#  && wget -O /config/docker-entrypoint.sh https://soo-test-bucket.s3.ap-northeast-2.amazonaws.com/kube-impala-docker/docker-entrypoint.sh
 
 
 # ADD CDH Repository

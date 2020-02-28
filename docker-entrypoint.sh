@@ -32,6 +32,8 @@ IMPALA_LOG_DIR=/var/log/impala
 IMPALA_CATALOG_ARGS=" -log_dir=${IMPALA_LOG_DIR} -state_store_host=${IMPALA_STATE_STORE_HOST}"
 IMPALA_STATE_STORE_ARGS=" -log_dir=${IMPALA_LOG_DIR} -state_store_port=${IMPALA_STATE_STORE_PORT}"
 
+# KUBE Config
+KUBE_IMPALA_SERVER_SVC_HOST=${KUBE_IMPALA_SERVER_SVC_HOST:="impala-servers.default.svc.cluster.local"}
 
 chmod +x /wait-for-it.sh
 
@@ -71,6 +73,9 @@ elif [[ "$1" == "impala-server" ]]; then
 #  /wait-for-it.sh kudu-master-1:7051 -t 120
 #  /wait-for-it.sh kudu-master-2:7051 -t 120
 #  /wait-for-it.sh kudu-master-3:7051 -t 120
+
+   # Kubernetest Config for servers'hostname change
+   echo $HOSTNAME'.'$KUBE_IMPALA_SERVER_SVC_HOST> /etc/hostname
 
    if [[ -n "$KUDU_MASTERS" ]]; then
     IMPALA_SERVER_ARGS=" \
