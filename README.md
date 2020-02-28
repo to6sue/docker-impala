@@ -16,3 +16,7 @@ docker-compose -f docker-compose.yml down
 - scale change
 
 docker-compose -f docker-compose.yml up --scale impala-server=3 --scale kudu-tserver=3 -d
+
+- NOTICE
+docker-entrypoint.sh 에서 impala-server 쪽 waiting.sh 는 kubernetes를 위한 docker image 생성시 주석처리
+단순 docker-compose 사용시에만 수행

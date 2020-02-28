@@ -70,9 +70,10 @@ elif [[ "$1" == "impala-catalog" ]]; then
 
 elif [[ "$1" == "impala-server" ]]; then
 
-#  /wait-for-it.sh kudu-master-1:7051 -t 120
-#  /wait-for-it.sh kudu-master-2:7051 -t 120
-#  /wait-for-it.sh kudu-master-3:7051 -t 120
+# only uncomment when kubernetes image making
+  /wait-for-it.sh kudu-master-1:7051 -t 120
+  /wait-for-it.sh kudu-master-2:7051 -t 120
+  /wait-for-it.sh kudu-master-3:7051 -t 120
 
    # Kubernetest Config for servers'hostname change
    echo $HOSTNAME'.'$KUBE_IMPALA_SERVER_SVC_HOST> /etc/hostname
