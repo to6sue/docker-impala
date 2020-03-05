@@ -49,10 +49,12 @@ services:
       - 21050
       - 22000
       - 23000
+      - 23020
       - 24000
       - 25000
       - 25010
       - 25020
+      - 26000
     command: ["impala-state-store"]
     environment:
       - IMPALA_STATE_STORE_HOST=impala-state-store
@@ -92,6 +94,7 @@ services:
       - 21050
       - 22000
       - 23000
+      - 23020
       - 24000
       - 25000
       - 25010
