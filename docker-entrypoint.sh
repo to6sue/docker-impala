@@ -49,7 +49,8 @@ if [[ "$1" == "hadoop-nm" ]]; then
  
 elif [[ "$1" == "hive-metastore" ]]; then
    # PostgreSQL depandency
-   /wait-for-it.sh postgres:5432 -t 120
+# only uncomment when using docker-compose   
+#   /wait-for-it.sh postgres:5432 -t 120
 
    psql -h postgres -U postgres -c "CREATE DATABASE metastore;" 2>/dev/null
 
@@ -62,18 +63,19 @@ elif [[ "$1" == "impala-state-store" ]]; then
    /bin/su -s /bin/bash -c "/bin/bash -c 'cd ~ && exec /usr/bin/statestored ${IMPALA_CATALOG_ARGS} >>${IMPALA_LOG_DIR}/impala-state-store.log 2>&1' &" impala
 
 elif [[ "$1" == "impala-catalog" ]]; then
-  # Hive-Metastore depandency  
-  /wait-for-it.sh hive-metastore:9083 -t 120
+  # Hive-Metastore depandency
+# only uncomment when using docker-compose  
+#  /wait-for-it.sh hive-metastore:9083 -t 120
 
   #/etc/init.d/impala-catalog start
   /bin/su -s /bin/bash -c "/bin/bash -c 'cd ~ && exec /usr/bin/catalogd ${IMPALA_CATALOG_ARGS} >>${IMPALA_LOG_DIR}/impala-catalog.log 2>&1' &" impala
 
 elif [[ "$1" == "impala-server" ]]; then
 
-# only uncomment when kubernetes image making
-  /wait-for-it.sh kudu-master-1:7051 -t 120
-  /wait-for-it.sh kudu-master-2:7051 -t 120
-  /wait-for-it.sh kudu-master-3:7051 -t 120
+# only uncomment when using docker-compose
+#  /wait-for-it.sh kudu-master-1:7051 -t 120
+#  /wait-for-it.sh kudu-master-2:7051 -t 120
+#  /wait-for-it.sh kudu-master-3:7051 -t 120
 
    # Kubernetest Config for servers'hostname change
    echo $HOSTNAME'.'$KUBE_IMPALA_SERVER_SVC_HOST> /etc/hostname
