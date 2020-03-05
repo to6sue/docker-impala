@@ -72,6 +72,7 @@ services:
       - 25000
       - 25010
       - 25020
+      - 26000
     command: ["impala-catalog"]
     environment:
       - IMPALA_CATALOG_HOST=impala-catalog
